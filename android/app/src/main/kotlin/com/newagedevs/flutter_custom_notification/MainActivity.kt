@@ -2,7 +2,7 @@ package com.newagedevs.flutter_custom_notification
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.annotation.NonNull
+import android.util.Log
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -24,6 +24,9 @@ class MainActivity: FlutterActivity() {
             if (call.method.equals("startNativeActivity")) {
                 val greetings = startNativeActivity()
                 result.success(greetings)
+            }else if(call.method.equals("startNativeActivityWithArgs")) {
+                val greetings = startNativeActivity(call.arguments as HashMap<*, *>?)
+                result.success(greetings)
             }
 
         }
@@ -32,6 +35,13 @@ class MainActivity: FlutterActivity() {
     private fun startNativeActivity(): String {
         //starting a native activity create in android studio using xml & kotlin.
         startActivity(Intent(this, NativeActivity::class.java))
+        return "Success"
+    }
+
+    private fun startNativeActivity(args: HashMap<*, *>?): String {
+        //starting a native activity create in android studio using xml & kotlin.
+        //here we put extra argument with the intent
+        startActivity(Intent(this, NativeActivity::class.java).putExtra("args", args))
         return "Success"
     }
 
