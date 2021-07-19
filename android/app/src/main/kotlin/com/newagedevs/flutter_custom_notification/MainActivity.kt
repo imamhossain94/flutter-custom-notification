@@ -1,5 +1,6 @@
 package com.newagedevs.flutter_custom_notification
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity
@@ -56,6 +57,9 @@ class MainActivity: FlutterActivity() {
 //    }
 
     private fun helloFromNativeCode(): String {
+
+        startActivity(Intent(this, NativeActivity::class.java))
+
         return "Hello from Native Android Code"
     }
 
