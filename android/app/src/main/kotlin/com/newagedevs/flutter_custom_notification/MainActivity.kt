@@ -100,6 +100,7 @@ class MainActivity: FlutterActivity() {
             builder = Notification.Builder(this, channelId)
                     .setContentTitle(title)
                     .setContentText(message)
+                    //setContent Only works on api less then 16
                     //.setContent(contentView)
                     .setSmallIcon(R.mipmap.ic_launcher)
                     .setLargeIcon(BitmapFactory.decodeResource(this.resources, R.mipmap.ic_launcher))
@@ -110,6 +111,7 @@ class MainActivity: FlutterActivity() {
             builder = Notification.Builder(this)
                     .setContentTitle(title)
                     .setContentText(message)
+                    //setContent Only works on api less then 16
                     //.setContent(contentView)
                     .setSmallIcon(R.mipmap.ic_launcher)
                     .setLargeIcon(BitmapFactory.decodeResource(this.resources, R.mipmap.ic_launcher))
@@ -121,9 +123,45 @@ class MainActivity: FlutterActivity() {
     }
 
 
-    private fun showCustomNotification(args: HashMap<*, *>?) {
+    private fun showCustomNotification(args: HashMap<*, *>?):String {
 
 
+        val notificationLayout = RemoteViews(packageName, R.layout.notification_small)
+        //val notificationLayoutExpanded = RemoteViews(packageName, R.layout.notification_large)
+
+
+        val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        lateinit var notificationChannel: NotificationChannel
+        lateinit var builder: Notification.Builder
+        val channelId = "i.apps.notifications"
+        val description = "Custom Notification"
+
+        val intent = Intent(this, NativeActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notificationChannel = NotificationChannel(channelId, description, NotificationManager.IMPORTANCE_HIGH)
+            notificationChannel.enableLights(true)
+            notificationChannel.lightColor = Color.GREEN
+            notificationChannel.enableVibration(false)
+            notificationManager.createNotificationChannel(notificationChannel)
+            builder = Notification.Builder(this, channelId)
+                    .setCustomContentView(notificationLayout)
+                    //.setCustomBigContentView(notificationLayoutExpanded)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentIntent(pendingIntent)
+        } else {
+
+            //Builder class & setContent is deprecated. I will Fix it later.
+            builder = Notification.Builder(this)
+                    .setContent(notificationLayout)
+                    //.setCustomBigContentView(notificationLayoutExpanded)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentIntent(pendingIntent)
+        }
+        notificationManager.notify(1234, builder.build())
+
+        return "Success"
 
     }
 

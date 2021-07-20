@@ -126,8 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         "name":"Md. Imam Hossain",
                         "age":"23y",
                         "gender":"Male",
-                        "current_time":DateTime.now(),
-                        "color": Color(0xffd65c57)
+                        "current_time":DateTime.now().toString(),
                       };
                       //Invoke a method named "startNativeActivity"
                       //startNativeActivity is the name of a function located in
