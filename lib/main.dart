@@ -116,6 +116,28 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
 
               SizedBox(height: 8,),
+              CupertinoButton(
+                  color: Colors.blueAccent,
+                  child: Text("Show Custom Notification From Native"),
+                  onPressed: () async{
+                    try {
+                      //Creating a Map
+                      Map<String, dynamic> data = {
+                        "name":"Md. Imam Hossain",
+                        "age":"23y",
+                        "gender":"Male",
+                        "current_time":DateTime.now(),
+                        "color": Color(0xffd65c57)
+                      };
+                      //Invoke a method named "startNativeActivity"
+                      //startNativeActivity is the name of a function located in
+                      //MainActivity that can be call from here.
+                      await platform.invokeMethod('showCustomNotificationFromNative', data);
+                    } on PlatformException catch (e) {
+                      print("Failed to Invoke: '${e.message}'.");
+                    }
+                  }
+              ),
 
             ],
           ),

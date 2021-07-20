@@ -30,20 +30,34 @@ class MainActivity: FlutterActivity() {
         MethodChannel(flutterEngine!!.dartExecutor.binaryMessenger, channel).setMethodCallHandler { call, result ->
 
             // check Invoked method name that was requested from main.dart file and response to it.
-            if (call.method.equals("startNativeActivity")) {
-                val greetings = startNativeActivity()
-                result.success(greetings)
-            }else if(call.method.equals("startNativeActivityWithArgs")) {
-                val greetings = startNativeActivity(call.arguments as HashMap<*, *>?)
-                result.success(greetings)
-            }else if(call.method.equals("showNotificationFromNative")) {
+            when {
+                call.method.equals("startNativeActivity") -> {
 
-                val title = call.argument<String>("title")?:"Empty"
-                val message = call.argument<String>("message")?:"Empty"
+                    val greetings = startNativeActivity()
+                    result.success(greetings)
 
+                }
+                call.method.equals("startNativeActivityWithArgs") -> {
 
-                val greetings = showSimpleNotification(title, message)
-                result.success(greetings)
+                    val greetings = startNativeActivity(call.arguments as HashMap<*, *>?)
+                    result.success(greetings)
+
+                }
+                call.method.equals("showNotificationFromNative") -> {
+
+                    val title = call.argument<String>("title")?:"Empty"
+                    val message = call.argument<String>("message")?:"Empty"
+                    val greetings = showSimpleNotification(title, message)
+                    result.success(greetings)
+
+                }
+                call.method.equals("showCustomNotificationFromNative") -> {
+
+                    val args = call.arguments as HashMap<*, *>?
+                    val greetings = showCustomNotification(args)
+                    result.success(greetings)
+
+                }
             }
 
         }
@@ -107,8 +121,9 @@ class MainActivity: FlutterActivity() {
     }
 
 
-    
-    private fun showCustomNotification() {
+    private fun showCustomNotification(args: HashMap<*, *>?) {
+
+
 
     }
 
