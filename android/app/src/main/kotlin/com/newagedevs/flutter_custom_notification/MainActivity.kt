@@ -1,8 +1,17 @@
 package com.newagedevs.flutter_custom_notification
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.RemoteViews
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -27,6 +36,14 @@ class MainActivity: FlutterActivity() {
             }else if(call.method.equals("startNativeActivityWithArgs")) {
                 val greetings = startNativeActivity(call.arguments as HashMap<*, *>?)
                 result.success(greetings)
+            }else if(call.method.equals("showNotificationFromNative")) {
+
+                val title = call.argument<String>("title")?:"Empty"
+                val message = call.argument<String>("message")?:"Empty"
+
+
+                val greetings = showSimpleNotification(title, message)
+                result.success(greetings)
             }
 
         }
@@ -42,6 +59,50 @@ class MainActivity: FlutterActivity() {
         //starting a native activity create in android studio using xml & kotlin.
         //here we put extra argument with the intent
         startActivity(Intent(this, NativeActivity::class.java).putExtra("args", args))
+        return "Success"
+    }
+
+    private fun showSimpleNotification(title:String, message:String): String {
+
+        //Code copied from https://www.geeksforgeeks.org/notifications-in-kotlin/
+        //visit this link to learn about android notification.
+        //Removed unnecessary code
+        val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        lateinit var notificationChannel: NotificationChannel
+        lateinit var builder: Notification.Builder
+        val channelId = "i.apps.notifications"
+        val description = "Simple Notification"
+
+        val intent = Intent(this, NativeActivity::class.java)
+
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notificationChannel = NotificationChannel(channelId, description, NotificationManager.IMPORTANCE_HIGH)
+            notificationChannel.enableLights(true)
+            notificationChannel.lightColor = Color.GREEN
+            notificationChannel.enableVibration(false)
+            notificationManager.createNotificationChannel(notificationChannel)
+            builder = Notification.Builder(this, channelId)
+                    .setContentTitle(title)
+                    .setContentText(message)
+                    //.setContent(contentView)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setLargeIcon(BitmapFactory.decodeResource(this.resources, R.mipmap.ic_launcher))
+                    .setContentIntent(pendingIntent)
+        } else {
+
+            //Builder class & setContent is deprecated. I will Fix it later.
+            builder = Notification.Builder(this)
+                    .setContentTitle(title)
+                    .setContentText(message)
+                    //.setContent(contentView)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setLargeIcon(BitmapFactory.decodeResource(this.resources, R.mipmap.ic_launcher))
+                    .setContentIntent(pendingIntent)
+        }
+        notificationManager.notify(1234, builder.build())
+
         return "Success"
     }
 

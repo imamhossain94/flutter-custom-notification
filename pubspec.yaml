@@ -1,4 +1,4 @@
-name: flutter_custom_notification
+name: Flutter Custom Notification
 description: A new Flutter application that use platform spacific coding to create custom notification in android.
 
 # The following line prevents the package from being accidentally published to

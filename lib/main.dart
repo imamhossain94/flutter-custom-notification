@@ -84,13 +84,30 @@ class _MyHomePageState extends State<MyHomePage> {
                         "gender":"Male",
                         "current_time":DateTime.now().toString()
                       };
-
-
                       //Invoke a method named "startNativeActivity"
                       //startNativeActivity is the name of a function located in
                       //MainActivity that can be call from here.
                       //Inside the invokeMethod, we will send data as a arguments
                       await platform.invokeMethod('startNativeActivityWithArgs', data);
+                    } on PlatformException catch (e) {
+                      print("Failed to Invoke: '${e.message}'.");
+                    }
+                  }
+              ),
+
+              SizedBox(height: 8,),
+              CupertinoButton(
+                  color: Colors.blueAccent,
+                  child: Text("Show Notification From Native"),
+                  onPressed: () async{
+                    try {
+                      //Invoke a method named "startNativeActivity"
+                      //startNativeActivity is the name of a function located in
+                      //MainActivity that can be call from here.
+                      await platform.invokeMethod('showNotificationFromNative', {
+                        "title": "Test Title",
+                        "message": "This is a Simple Notification Thrown from Native"
+                      });
                     } on PlatformException catch (e) {
                       print("Failed to Invoke: '${e.message}'.");
                     }
