@@ -10,8 +10,8 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.widget.RemoteViews
+import androidx.core.app.NotificationCompat
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -132,8 +132,8 @@ class MainActivity: FlutterActivity() {
 
         val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         lateinit var notificationChannel: NotificationChannel
-        lateinit var builder: Notification.Builder
-        val channelId = "i.apps.notifications"
+        lateinit var builder: NotificationCompat.Builder
+        val channelId = "i.apps.custom.notification"
         val description = "Custom Notification"
 
         val intent = Intent(this, NativeActivity::class.java)
@@ -144,19 +144,22 @@ class MainActivity: FlutterActivity() {
             notificationChannel.enableLights(true)
             notificationChannel.lightColor = Color.GREEN
             notificationChannel.enableVibration(false)
+
             notificationManager.createNotificationChannel(notificationChannel)
-            builder = Notification.Builder(this, channelId)
+            builder = NotificationCompat.Builder(this, channelId)
                     .setCustomContentView(notificationLayout)
+                    .setCustomHeadsUpContentView(notificationLayout)
                     //.setCustomBigContentView(notificationLayoutExpanded)
                     .setSmallIcon(R.mipmap.ic_launcher)
                     .setContentIntent(pendingIntent)
         } else {
 
             //Builder class & setContent is deprecated. I will Fix it later.
-            builder = Notification.Builder(this)
+            builder = NotificationCompat.Builder(this)
                     .setContent(notificationLayout)
                     //.setCustomBigContentView(notificationLayoutExpanded)
                     .setSmallIcon(R.mipmap.ic_launcher)
+                    .setPriority(Notification.PRIORITY_MAX)
                     .setContentIntent(pendingIntent)
         }
         notificationManager.notify(1234, builder.build())
