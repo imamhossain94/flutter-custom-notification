@@ -53,7 +53,7 @@ class MainActivity: FlutterActivity() {
                 }
                 call.method.equals("showCustomNotificationFromNative") -> {
 
-                    val args = call.arguments as HashMap<*, *>?
+                    val args = call.arguments as HashMap<*, *>
                     val greetings = showCustomNotification(args)
                     result.success(greetings)
 
@@ -123,12 +123,25 @@ class MainActivity: FlutterActivity() {
     }
 
 
-    private fun showCustomNotification(args: HashMap<*, *>?):String {
+    private fun showCustomNotification(args: HashMap<*, *>):String {
 
 
         val notificationLayout = RemoteViews(packageName, R.layout.notification_small)
-        //val notificationLayoutExpanded = RemoteViews(packageName, R.layout.notification_large)
 
+
+        //Set TextView Value
+        notificationLayout.setTextViewText(R.id.name_view, args["name"].toString())
+        notificationLayout.setTextViewText(R.id.age_view, args["age"].toString())
+        notificationLayout.setTextViewText(R.id.gender_view, args["gender"].toString())
+        notificationLayout.setTextViewText(R.id.time_view, args["current_time"].toString())
+
+        //Set a click listener for the flutter logo
+        val intent = Intent(this, NativeActivity::class.java)
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        notificationLayout.setOnClickPendingIntent(R.id.image_view, pendingIntent)
+
+
+        //val notificationLayoutExpanded = RemoteViews(packageName, R.layout.notification_large)
 
         val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         lateinit var notificationChannel: NotificationChannel
@@ -136,8 +149,6 @@ class MainActivity: FlutterActivity() {
         val channelId = "i.apps.custom.notification"
         val description = "Custom Notification"
 
-        val intent = Intent(this, NativeActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notificationChannel = NotificationChannel(channelId, description, NotificationManager.IMPORTANCE_HIGH)
@@ -151,7 +162,7 @@ class MainActivity: FlutterActivity() {
                     .setCustomHeadsUpContentView(notificationLayout)
                     //.setCustomBigContentView(notificationLayoutExpanded)
                     .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentIntent(pendingIntent)
+                    //.setContentIntent(pendingIntent)
         } else {
 
             //Builder class & setContent is deprecated. I will Fix it later.
@@ -160,8 +171,9 @@ class MainActivity: FlutterActivity() {
                     //.setCustomBigContentView(notificationLayoutExpanded)
                     .setSmallIcon(R.mipmap.ic_launcher)
                     .setPriority(Notification.PRIORITY_MAX)
-                    .setContentIntent(pendingIntent)
+                    //.setContentIntent(pendingIntent)
         }
+
         notificationManager.notify(1234, builder.build())
 
         return "Success"
